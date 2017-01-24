@@ -1,0 +1,23 @@
+version: '2'
+services:
+  db:
+    image: mdillon/postgis:latest
+    ports:
+      - 5432:5432
+    env_file:
+      - containers/development/.env
+  app:
+    tty: true
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: containers/development/Dockerfile
+    env_file:
+      - containers/development/.env
+    command: containers/scripts/wait-for-it.sh db:5432 -- containers/development/entrypoint
+    depends_on:
+      - db
+    volumes:
+      - .:/usr/app/dockerized-rails
+    ports:
+      - 3000:3000
