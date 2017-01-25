@@ -154,6 +154,7 @@ RAILS_ENV=production
 RACK_ENV=production
 RAILS_ROOT=/usr/app/${APP_NAME}
 SECRET_KEY_BASE=`docker-compose run app bundle exec rake secret`
+RAILS_LOG_TO_STDOUT=true
 EOF
 
 cat >> config/database.yml <<EOF
