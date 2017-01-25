@@ -2,9 +2,9 @@ version: '2'
 
 services:
   nginx:
-    image: nginx
+    image: nginx:1.11.9
     volumes:
-      - ./containers/production/nginx.conf:/etc/nginx/conf.d/default.conf
+      - nginx_config:/etc/nginx/conf.d
     volumes_from:
       - app
     depends_on:
@@ -12,11 +12,13 @@ services:
     ports:
       - 80:80
   db:
-    image: mdillon/postgis:latest
+    image: mdillon/postgis:9.6
     ports:
       - 5432:5432
     env_file:
       - containers/production/.env
+    volumes:
+      - db-data:/var/lib/postgresql/db-data
   app:
     build:
       context: .
@@ -26,6 +28,7 @@ services:
     command: containers/scripts/wait-for-it.sh db:5432 -- containers/production/entrypoint
     volumes:
       - assets:/usr/app/dockerized-rails/public/assets
+      - nginx_config:/etc/nginx/conf.d
     depends_on:
       - db
     ports:
@@ -33,3 +36,8 @@ services:
 
 volumes:
   assets:
+    external: false
+  data:
+    external: false
+  nginx_config:
+    external: false
