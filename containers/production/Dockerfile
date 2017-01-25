@@ -17,7 +17,9 @@ COPY config/puma.rb config/puma.rb
 
 COPY . .
 
-# VOLUME ["$RAILS_ROOT/public"]
+RUN mkdir -p /etc/nginx/conf.d/
+COPY ./containers/production/nginx.conf /etc/nginx/conf.d/default.conf
+
 
 RUN DB_ADAPTER=nulldb bundle exec rake assets:precompile RAILS_ENV=production
 
