@@ -1,24 +1,26 @@
-# README
+## Deployment
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+```bash
+# get your API token from digitalocean dashboard
+DO_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-Things you may want to cover:
+# create a docker-machine using the digitalocean driver
+docker-machine create --driver digitalocean --digitalocean-access-token=$DO_TOKEN --digitalocean-size=1gb digitalocean
 
-* Ruby version
+# make the machine active
+docker-machine env digitalocean
+eval $(docker-machine env digitalocean)
 
-* System dependencies
+# deploy the services
+docker-compose up -d
 
-* Configuration
+# make changes to rails code... redeploy by running
+docker-compose up -d --no-deps --build app
 
-* Database creation
+# and we are live!
+open http://`docker-machine ip`
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+# shut stuff down
+docker-machine stop digitalocean
+docker-machine rm digitalocean
+```
