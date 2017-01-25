@@ -3,8 +3,6 @@ version: '2'
 services:
   nginx:
     image: nginx:1.11.9
-    volumes:
-      - nginx_config:/etc/nginx/conf.d
     volumes_from:
       - app
     depends_on:

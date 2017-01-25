@@ -4,7 +4,7 @@ RAILS_ENV=production
 
 cd $APP_NAME
 
-# Before we start we will make sure that we have a scafolled app just to make sure we can test everything is working.
+# Before we start we'll make sure that we have a scaffolded app just to make sure we can test everything is working.
 
 docker-compose up
 docker-compose run app bundle exec rails generate scaffold post title body:text published:boolean RAILS_ENV=development
@@ -59,8 +59,6 @@ version: '2'
 services:
   nginx:
     image: nginx:1.11.9
-    volumes:
-      - nginx_config:/etc/nginx/conf.d
     volumes_from:
       - app
     depends_on:
