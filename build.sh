@@ -92,7 +92,7 @@ EOF
 
 
 # add app specific nginx.config
-SERVER_NAME="www.example.com"
+SERVER_NAME="dockerized-rails.prod"
 cat > containers/production/nginx.conf <<EOF
 upstream rails_app {
   server app:3000;
