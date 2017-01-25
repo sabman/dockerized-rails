@@ -33,6 +33,8 @@ GEM
       activemodel (= 5.0.1)
       activesupport (= 5.0.1)
       arel (~> 7.0)
+    activerecord-nulldb-adapter (0.3.6)
+      activerecord (>= 2.0.0)
     activerecord-postgis-adapter (4.0.2)
       activerecord (~> 5.0.0)
       rgeo-activerecord (~> 5.0.0)
@@ -161,6 +163,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord-nulldb-adapter
   activerecord-postgis-adapter
   byebug
   coffee-rails (~> 4.2)

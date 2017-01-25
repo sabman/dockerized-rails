@@ -11,3 +11,6 @@ test:
 development:
   <<: *default
   database: dockerized-rails_development
+production:
+  <<: *default
+  database: dockerized-rails_production
