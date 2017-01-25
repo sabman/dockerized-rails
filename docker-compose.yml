@@ -1,1 +1,1 @@
-containers/development/docker-compose.yml
+containers/production/docker-compose.yml

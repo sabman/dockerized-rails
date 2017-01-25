@@ -19,6 +19,6 @@ COPY . .
 
 # VOLUME ["$RAILS_ROOT/public"]
 
-RUN DB_ADAPTER=nulldb bundle exec rake assets:precompile RAILS_ENV=production --trace
+RUN DB_ADAPTER=nulldb bundle exec rake assets:precompile RAILS_ENV=production
 
 EXPOSE 3000
