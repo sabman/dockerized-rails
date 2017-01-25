@@ -43,9 +43,10 @@ COPY config/puma.rb config/puma.rb
 
 COPY . .
 
-# VOLUME ["\$RAILS_ROOT/public"]
+RUN mkdir -p /etc/nginx/conf.d/
+COPY ./containers/${RAILS_ENV}/nginx.conf /etc/nginx/conf.d/default.conf
 
-RUN DB_ADAPTER=nulldb bundle exec rake assets:precompile RAILS_ENV=production
+RUN DB_ADAPTER=nulldb bundle exec rails assets:precompile RAILS_ENV=production
 
 EXPOSE 3000
 EOF
@@ -57,9 +58,9 @@ version: '2'
 
 services:
   nginx:
-    image: nginx
+    image: nginx:1.11.9
     volumes:
-      - ./containers/${RAILS_ENV}/nginx.conf:/etc/nginx/conf.d/default.conf
+      - nginx_config:/etc/nginx/conf.d
     volumes_from:
       - app
     depends_on:
@@ -67,11 +68,13 @@ services:
     ports:
       - 80:80
   db:
-    image: mdillon/postgis:latest
+    image: mdillon/postgis:9.6
     ports:
       - 5432:5432
     env_file:
       - containers/${RAILS_ENV}/.env
+    volumes:
+      - data:/var/lib/postgresql/db-data
   app:
     build:
       context: .
@@ -81,6 +84,7 @@ services:
     command: containers/scripts/wait-for-it.sh db:5432 -- containers/${RAILS_ENV}/entrypoint
     volumes:
       - assets:/usr/app/${APP_NAME}/public/assets
+      - nginx_config:/etc/nginx/conf.d
     depends_on:
       - db
     ports:
@@ -88,11 +92,16 @@ services:
 
 volumes:
   assets:
+    external: false
+  data:
+    external: false
+  nginx_config:
+    external: false
 EOF
 
 
 # add app specific nginx.config
-SERVER_NAME="dockerized-rails.prod"
+SERVER_NAME="${APP_NAME}.prod"
 cat > containers/production/nginx.conf <<EOF
 upstream rails_app {
   server app:3000;
@@ -160,9 +169,20 @@ cat > containers/${RAILS_ENV}/entrypoint <<EOF
 #!/bin/bash
 set -e
 
+if [[ -a /tmp/puma.pid ]]; then
+  rm /tmp/puma.pid
+fi
+
 bundle exec rake db:create
 bundle exec rake db:migrate
-bundle exec puma -C config/puma.rb -b 'tcp://0.0.0.0:3000'
+
+if [[ \$RAILS_ENV == "production" ]]; then
+  rake assets:precompile
+  mkdir -p /etc/nginx/conf.d/
+  cp containers/${RAILS_ENV}/nginx.conf /etc/nginx/conf.d/default.conf
+fi
+
+rails server -b 0.0.0.0 -P /tmp/puma.pid
 
 exec "\$@"
 EOF
