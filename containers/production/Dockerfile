@@ -20,7 +20,6 @@ COPY . .
 RUN mkdir -p /etc/nginx/conf.d/
 COPY ./containers/production/nginx.conf /etc/nginx/conf.d/default.conf
 
-
-RUN DB_ADAPTER=nulldb bundle exec rake assets:precompile RAILS_ENV=production
+RUN DB_ADAPTER=nulldb bundle exec rails assets:precompile RAILS_ENV=production
 
 EXPOSE 3000
